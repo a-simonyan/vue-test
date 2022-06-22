@@ -19,7 +19,7 @@
             :key="`${index}_text`"
           >
             <span class="text-item">{{ item.text }}</span>
-            <draggable group="a" :list="item"  :sort="false" :move="dragHandler" style="display: inline-block">
+            <draggable group="a" :list="item"  :sort="false"  :move="dragHandler" class="abc" style="display: inline-block; padding:10px" >
               <div class="drag-element" :id="item.id">
                 <button
                   @click="selectedItem(item.id)"
@@ -88,6 +88,7 @@ export default {
       text: null,
       currentAnswerIndex: null,
       currentDragId: null,
+      debounce: null
     };
   },
   mounted() {
@@ -132,22 +133,31 @@ export default {
       this.answers.find((el) => el.id === answerId).selected = false;
       this.text.find((elem) => elem.id === id).buttonValue = null;
       this.text.find((elem) => elem.id === id).answerId = null;
-    },
+    }, 
     handleDragAnswer(e) {
       this.currentAnswerIndex = e.draggedContext.element.id.toString()
-      this.answers.find(elem => elem.id === +this.currentAnswerIndex).selected = true
       this.currentDragId = e.related.id
-      return false;
-    },
-    handleDragEnd() {
-      if (this.currentAnswerIndex && this.currentDragId) {
-        this.text.find(elem => elem.id === +this.currentDragId).buttonValue = this.answers.find(el => el.id === +this.currentAnswerIndex).label
-        this.text.find(elem => elem.id === +this.currentDragId).answerId = this.answers.find(el => el.id === +this.currentAnswerIndex).id
-        this.answers.find(elem => elem.id === +this.currentAnswerIndex).disabled = true
-        this.currentAnswerIndex = null
+      clearTimeout(this.debounce)
+      this.debounce = setTimeout(() => {
         this.currentDragId = null
+        this.currentAnswerIndex = null
+      }, 400)      
+        return false;
+    },
+    handleDragEnd(e) {
+      if (this.currentAnswerIndex && this.currentDragId) {
+        if(this.text.find((elem) => elem.id === +this.currentDragId).answerId === null) {
+          this.text.find((elem) => elem.id === +this.currentDragId).buttonValue = this.answers.find((el) => el.id === +this.currentAnswerIndex).label; 
+          this.text.find((elem) => elem.id === +this.currentDragId).answerId = this.answers.find((el) => el.id === +this.currentAnswerIndex).id;
+          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).disabled = true;
+          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).selected = false;
+          this.currentAnswerIndex = null;
+          this.currentDragId = null;
+        } else {
+          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).selected = false;
+        }
       }
-    }
+    },
   },
 };
 </script>
@@ -197,7 +207,7 @@ export default {
   gap: 20px;
 }
 .answer-btn {
-  max-width: 200px;
+  max-width: 160px;
   width: 100%;
   border-radius: 10px;
   background: #1b998b;
