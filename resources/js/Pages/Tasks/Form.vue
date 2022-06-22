@@ -115,7 +115,7 @@ export default {
       });
     },
     selectedItem(id) {
-      if (this.selectedAnswer) {
+      if (this.selectedAnswer && this.text.find((elem) => elem.id === id).answerId === null) {
         this.answers.find(
           (elem) => elem.label === this.selectedAnswer
         ).disabled = true;
