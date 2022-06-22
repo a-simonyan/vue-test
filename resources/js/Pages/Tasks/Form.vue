@@ -3,7 +3,7 @@
     <div class="wrapper">
       <div class="description">
         <div class="info">
-          <img src="../../../icons/info.png" width="40" alt="">
+          <img src="../../../icons/info.png" width="40" alt="" />
         </div>
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris dui
@@ -19,12 +19,20 @@
             :key="`${index}_text`"
           >
             <span class="text-item">{{ item.text }}</span>
-            <draggable group="a" :list="item"  :sort="false"  :move="dragHandler" class="abc" style="display: inline-block; padding:10px" >
+            <draggable
+              group="a"
+              :list="item"
+              handle=".handle"
+              :move="dragHandler"
+              style="display: inline-block; padding: 10px"
+            >
               <div class="drag-element" :id="item.id">
                 <button
                   @click="selectedItem(item.id)"
-                  class="no-selected"
-                  :class="{ selected: item.buttonValue }"
+                  :class="{
+                    selected: item.buttonValue,
+                    'no-selected': !item.buttonValue,
+                  }"
                   v-if="index < text.length - 1"
                 >
                   <span v-if="item.buttonValue">{{ item.buttonValue }}</span>
@@ -42,7 +50,14 @@
           </span>
         </div>
         <div>
-          <draggable class="answers" :sort="false" :list="answers" :move="handleDragAnswer" @end="handleDragEnd" group="a">
+          <draggable
+            class="answers"
+            :sort="false"
+            :list="answers"
+            :move="handleDragAnswer"
+            @end="handleDragEnd"
+            group="a"
+          >
             <button
               class="answer-btn"
               v-for="(answer, index) in answers"
@@ -88,7 +103,7 @@ export default {
       text: null,
       currentAnswerIndex: null,
       currentDragId: null,
-      debounce: null
+      debounce: null,
     };
   },
   mounted() {
@@ -104,13 +119,13 @@ export default {
       return false;
     },
     selectAnswer(id) {
-      this.selectedAnswerId = id
+      this.selectedAnswerId = id;
       this.answers.forEach((elem) => {
         if (elem.id === id) {
           this.selectedAnswer = elem.label;
           elem.selected = !elem.selected;
           if (!elem.selected) {
-            this.selectedAnswer = null
+            this.selectedAnswer = null;
           }
         } else {
           elem.selected = false;
@@ -118,14 +133,17 @@ export default {
       });
     },
     selectedItem(id) {
-      if (this.selectedAnswer && this.text.find((elem) => elem.id === id).answerId === null) {
+      if (
+        this.selectedAnswer &&
+        this.text.find((elem) => elem.id === id).answerId === null
+      ) {
         this.answers.find(
           (elem) => elem.label === this.selectedAnswer
         ).disabled = true;
         this.text.forEach((elem) => {
           if (elem.id === id) {
             elem.buttonValue = this.selectedAnswer;
-            elem.answerId = this.selectedAnswerId
+            elem.answerId = this.selectedAnswerId;
             this.selectedAnswer = null;
           }
         });
@@ -136,28 +154,42 @@ export default {
       this.answers.find((el) => el.id === answerId).selected = false;
       this.text.find((elem) => elem.id === id).buttonValue = null;
       this.text.find((elem) => elem.id === id).answerId = null;
-    }, 
+    },
     handleDragAnswer(e) {
-      this.currentAnswerIndex = e.draggedContext.element.id.toString()
-      this.currentDragId = e.related.id
-      clearTimeout(this.debounce)
+      this.currentAnswerIndex = e.draggedContext.element.id.toString();
+      this.currentDragId = e.related.id;
+      clearTimeout(this.debounce);
       this.debounce = setTimeout(() => {
-        this.currentDragId = null
-        this.currentAnswerIndex = null
-      }, 400)      
-        return false;
+        this.currentDragId = null;
+        this.currentAnswerIndex = null;
+      }, 400);
+      return false;
     },
     handleDragEnd(e) {
       if (this.currentAnswerIndex && this.currentDragId) {
-        if(this.text.find((elem) => elem.id === +this.currentDragId).answerId === null) {
-          this.text.find((elem) => elem.id === +this.currentDragId).buttonValue = this.answers.find((el) => el.id === +this.currentAnswerIndex).label; 
-          this.text.find((elem) => elem.id === +this.currentDragId).answerId = this.answers.find((el) => el.id === +this.currentAnswerIndex).id;
-          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).disabled = true;
-          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).selected = false;
+        if (
+          this.text.find((elem) => elem.id === +this.currentDragId).answerId ===
+          null
+        ) {
+          this.text.find(
+            (elem) => elem.id === +this.currentDragId
+          ).buttonValue = this.answers.find(
+            (el) => el.id === +this.currentAnswerIndex
+          ).label;
+          this.text.find((elem) => elem.id === +this.currentDragId).answerId =
+            this.answers.find((el) => el.id === +this.currentAnswerIndex).id;
+          this.answers.find(
+            (elem) => elem.id === +this.currentAnswerIndex
+          ).disabled = true;
+          this.answers.find(
+            (elem) => elem.id === +this.currentAnswerIndex
+          ).selected = false;
           this.currentAnswerIndex = null;
           this.currentDragId = null;
         } else {
-          this.answers.find((elem) => elem.id === +this.currentAnswerIndex).selected = false;
+          this.answers.find(
+            (elem) => elem.id === +this.currentAnswerIndex
+          ).selected = false;
         }
       }
     },
@@ -182,7 +214,7 @@ export default {
   margin: 0 40px 0 40px;
   color: #4c4c4c;
 }
-.info{
+.info {
   margin-right: 15px;
 }
 .content {
@@ -222,7 +254,6 @@ export default {
   width: 150px;
   border: 1px solid #d9d9d9;
   border-radius: 10px;
-  margin-right: 15px;
   color: #1b998b;
   height: 36px;
 }
@@ -238,9 +269,11 @@ export default {
   opacity: 0.5;
 }
 .selected {
+  width: 150px;
   background: #1b998b;
+  border-radius: 10px;
+  height: 36px;
   color: #ffffff;
-  border: none;
   position: relative;
 }
 .cancel {
@@ -250,10 +283,7 @@ export default {
   background: #ffffff;
   border-radius: 50px;
 }
-.text-items{
+.text-items {
   line-height: 30px;
-}
-.text-item{
-  margin-right: 15px;
 }
 </style>
