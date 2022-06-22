@@ -109,6 +109,9 @@ export default {
         if (elem.id === id) {
           this.selectedAnswer = elem.label;
           elem.selected = !elem.selected;
+          if (!elem.selected) {
+            this.selectedAnswer = null
+          }
         } else {
           elem.selected = false;
         }
